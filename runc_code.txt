@@ -1,0 +1,29 @@
+#### === INSTRUCOES PARA RODAR O CODIGO PIM FGVC COM VALIDACAO CRUZADA - CROSS VALIDATION
+
+1- Colocar as imagens em ./data/all/ - dividir cada classe em uma pasta
+2- Em CUB200_SwinT.yaml setar a variavel 'num_folds' de acordo com a quantidade desejada de dobras
+3- Em CUB200_SwinT.yaml setar a variavel 'val_ratio' de acordo com o valor desejado para validacao - 0 a 1 eh de 0 a 100%
+4- Para gerar as dobras rodar: python Split1.py --c ../configs/CUB200_SwinT.yaml
+4a. Vai criar a pasta folds (caso nao exista) e dentro dela vai deixar separado as as pastas das classes com o respectivo percentual
+5- Toda vez q for rodar o codigo, tem q apagar as pastas folds, train, test, val e results - o codigo ainda nao faz automatico essa parte
+5a. Se nao apagar da erro
+6- 
+
+
+
+#serah necessario alterar a forma como o dataset eh carregado. 
+    			#1- divir em Nfolds (Split1.py - pode ser via .yaml) 
+    			#2- com o train set formado dividir le em train and test para cada fold - esta funcionando (separado do codigo geral) - valor num_folds e val_ratio setado via yaml
+    			#3- o carreagamento para aqui serah da mesma forma, somente a forma que serah montado no dataset.py que vai ser diferente - verificar config_utils
+    			#4- Depois que dividir os datasets em Nfolds, e gerar os sets de train, validation e test - verficar como implementar a etapa de test - esta gerando atehh train, test e val, mas nao esta integrado ao codigo geral ainda
+    			#5- Depois das etapas anteriores geradas - fazer loop para o codigo executar os Nfolds - kdobras - conforme valor setado num_folds
+    			#6- Implementar as metricas P, R, Fscor - Acuracia já tem - talvez matriz confusão - TP, FP, TN, FN talvez
+    			#7- Implementar DA para Balanceamento de dataset
+    			
+    			
+#Para o split funcionar:
+    #1- Um script (Split1.py) para dividir em Nfold - Funcionando - integrado ao codigo - 1a etapa
+    #2- Depois que separar em Nfolds - Para o corrente fold gerar train, test e validation (x% do train via yaml) para (train_test_split.py) - esta gerando train, test e validation - esta parcialmente integrado
+    #3-Para cada experimento rodar primeiro o Split1.py - divide em Nfolds - roda somente uma vez - Ok integrado
+    #Ajustar o dataset - hoje o train_root e o val_rot sao passados via yaml - mas agora sera via script - veriifcar como fazer
+    #4- Depois de dividido em Nfolds - roda o train_split_folds para cada Nfold - colocar em forma de def e chamar ele toda vez... veriifcar como fazer isso
