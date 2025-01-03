@@ -1,0 +1,67 @@
+project_name: Bedin_PIG_Ears_Cond_Balance  # nome do projeto # IMPORTANTE LER O ARTGIO PARA ENTENDER ALGUMAS COISAS DAQUI
+exp_name: PIG_Tail_Condition_Balance_ResNet50_SGD
+use_wandb: True  #Usando false para ver o q vai dar 
+wandb_entity: bedin
+
+train_root: /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM/data/train/
+#essa parte vai sair fora - vai ser passada via script .py
+val_root: /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM/data/val/
+#essa parte vai sair fora - vai ser passada via script .py
+test_root: /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM/data/test/
+#essa parte eh nova -verificar como vai funcionar - #essa parte vai sair fora - vai ser passada via script .py
+
+data_path: /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM/data/all/  #essa parte vai sair fora - vai ser passada via script .py
+metrics_paths: /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM/data/metrics/
+heat_path: /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM/data/
+#the line above is the path to save the heatmaps folder and the heatmaps images
+#essa parte vai sair fora - vai ser passada via script .py
+#essa parte de cima para fazer o balanceamento
+results_path: /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM/results/
+#essa parte vai sair fora - vai ser passada via script .py
+records_path: /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM/records/  #essa parte vai sair fora - vai ser passada via script .py
+
+data_size: 448  #para Swint 384- para CNN usar 448 - ViT 224
+num_workers: 2 #https://saturncloud.io/blog/how-does-the-number-of-workers-parameter-in-pytorch-dataloader-actually-work/archive/data.pkl
+batch_size: 16 #o original estava em 16
+model_name: resnet50 #verificar o arquivo builder.py com as opções - verificar e colocar + redes - Funciona tanto para CNN como para transformers - quem lê eh a linha 52 do Main
+num_folds: 5  #essa parte eh nova - usada para Cross Validation
+val_ratio: 0.2 # de >0<1  #porcentagem q vai para validacao
+pretrained: ~
+#/home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM/pretrained/best.pt
+#aqui vai o modelo pre-treinado - se for para treinar um novo modelo vai em ../models/ - se for para testar um modelo pre-treinado 'pronmto' vai em ../pretrained/.. - interessante sempre colocar o caminho inteiro
+pretrained_heat: /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM/pretrained/best.pt
+#esse eh o mesmo caminmho que o pretraned, mas para rodar o heat.py em automatico, para não dar erro em outras partes do codgio, vai ser necessario depois melhorar isso
+threshold: 0.75 #para o heat.py - verificar se vai ser usado
+num_heat_images: 5
+#number of images to be generated and saved in the heatmaps folder
+num_augments: 1 #relação para data augmentation
+
+optimizer: SGD #UNICO OTIMIZADOR - VERIFICAR COMO USAR OUTRO
+max_lr: 0.001 #PQ OS DOIS É IGUAL?
+wdecay: 0.0005 #weight decay
+max_epochs: 60  #50 PARA TESTE INICIACAO
+warmup_batchs: 200 #https://datascience.stackexchange.com/questions/103022/warmup-steps-in-deep-learning
+use_amp: True #Automatic Mixed Precision - https://developer.nvidia.com/automatic-mixed-precision - https://pytorch.org/tutorials/recipes/recipes/amp_recipe.html
+use_fpn: True  #FEATURE PYRAMID NETWORK
+fpn_size: 1536  #original 1536
+use_selection: True #o algoritmo selector?
+num_classes: 5  #O CUB200  tem 200 classes no exemplo de teste coloquei 10
+num_selects:   #para efficient 512,256, 128, 64 - para vit - 32-32-32-32-  verificar se consegue outro
+  layer1: 2048
+  layer2: 512
+  layer3: 128
+  layer4: 32
+use_combiner: True  #ultima 'camada antes' de ir para a camada de 'predicao', the algorithm use MLP - Multi Layer Perceptron and GCN- Graph Convolutional Network
+lambda_b: 0.5
+lambda_s: 0.0
+lambda_n: 5.0
+lambda_c: 1.0
+update_freq: 2
+log_freq: 10
+eval_freq: 1  
+
+
+#python main.py --c ./configs/CUB200_SwinT.yaml   -   rodar o treino
+
+# python heat.py --c ./configs/CUB200_SwinT.yaml --img /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM/vis/001.jpg --save_img /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM/vis/001/
+#A linha acima roda o heat?

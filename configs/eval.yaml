@@ -1,0 +1,54 @@
+project_name: Bedin_Cross_Tail_2  # nome do projeto # IMPORTANTE LER O ARTGIO PARA ENTENDER ALGUMAS COISAS DAQUI
+exp_name: Cross_Tail_2
+use_wandb: True  #Usando false para ver o q vai dar 
+wandb_entity: bedin
+
+train_root: ~
+#/home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM_Cruz/data/train/
+#essa parte vai sair fora - vai ser passada via script .py
+val_root: /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM_Cruz/data/val/
+#essa parte vai sair fora - vai ser passada via script .py
+test_root: /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM_Cruz/data/test/
+#essa parte eh nova -verificar como vai funcionar - #essa parte vai sair fora - vai ser passada via script .py
+
+data_size: 484  #para transformers 384- para CNN usar 448
+num_workers: 2 #https://saturncloud.io/blog/how-does-the-number-of-workers-parameter-in-pytorch-dataloader-actually-work/archive/data.pkl
+batch_size: 4 #o original estava em 16
+model_name: resnet50 #verificar o arquivo builder.py com as opções - verificar e colocar + redes - Funciona tanto para CNN como para transformers - quem lê eh a linha 52 do Main
+num_folds: 5  #essa parte eh nova - usada para Cross Validation
+val_ratio: 0.2 # de >0<1  #porcentagem q vai para validacao
+pretrained: /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM_Cruz/pretrained/best.pt
+#aqui vai o modelo pre-treinado - se for para treinar um novo modelo vai em ../models/ - se for para testar um modelo pre-treinado 'pronmto' vai em ../pretrained/.. - interessante sempre colocar o caminho inteiro
+optimizer: SGD #UNICO OTIMIZADOR - VERIFICAR COMO USAR OUTRO
+max_lr: 0.001 #PQ OS DOIS É IGUAL?
+wdecay: 0.0005 #weight decay
+max_epochs: 100  #50 PARA TESTE INICIACAO
+warmup_batchs: 80 #https://datascience.stackexchange.com/questions/103022/warmup-steps-in-deep-learning
+use_amp: True #Automatic Mixed Precision - https://developer.nvidia.com/automatic-mixed-precision - https://pytorch.org/tutorials/recipes/recipes/amp_recipe.html
+use_fpn: True  #FEATURE PYRAMID NETWORK
+fpn_size: 1536  #original 1536
+use_selection: True #o algoritmo selector?
+num_classes: 5  #O CUB200  tem 200 classes no exemplo de teste coloquei 10
+num_selects:   #Numero de seleções de areas em cada layer - conforme vai passando para outra layer vai diminuindo até 'eleger' as com maior probabilidade de conter a classe - é o segredo do algorthmo
+  layer1: 2048
+  layer2: 512
+  layer3: 128
+  layer4: 32
+use_combiner: True  #ultima 'camada antes' de ir para a camada de 'predicao', the algorithm use MLP - Multi Layer Perceptron and GCN- Graph Convolutional Network
+lambda_b: 0.5
+lambda_s: 0.0
+lambda_n: 5.0
+lambda_c: 1.0
+update_freq: 2
+log_freq: 100  #
+eval_freq: 1   #o original a cada 10 epocas valida - o normal eh com cada 1 epoca
+
+#rodar o Split para formar os folds: python Split1.py --c ../configs/CUB200_SwinT.yaml
+
+#python main.py --c ./configs/CUB200_SwinT.yaml - Rodar o Codigo para treino
+#python main.py --c ./configs/eval.yaml
+
+#python heat.py --c ./configs/CUB200_SwinT.yaml --img ./vis/001.jpg --save_img ./vis/001/   
+#para rodar o heat tem q colocar o caminho inteiro -> ex: python heat.py --c ./configs/CUB200_SwinT.yaml --img /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM_master/vis/Sooty_Albatross_0004_796366.jpg --save_img /home/EduardoB/Documentos/Codes/FGIR/FGVC_PIM_master/vis/001/
+
+#python infer.py --c ./configs/eval.yaml
